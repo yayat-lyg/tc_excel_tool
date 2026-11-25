@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TC Excel Tool</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+    <div class="wrap">
+        <h1>TC Excel Tool</h1>
+        <p>Upload PDF dokumen shipment H&amp;M → cek No &amp; tanggal DO → download Excel untuk pengajuan TC Control Union.
+            Semua proses di browser ini, file tidak dikirim ke mana pun.</p>
+    </div>
+</header>
+
+<main class="wrap">
+    <section class="card">
+        <h2><span class="step">1</span> Upload PDF</h2>
+        <label id="dropZone" class="drop">
+            <input id="fileInput" type="file" accept="application/pdf,.pdf" multiple hidden>
+            <strong>Klik atau tarik file PDF ke sini</strong>
+            <span>Satu Excel = satu order. File ZIP harus di-extract dulu.</span>
+        </label>
+        <ul class="file-guide">
+            <li><b>Invoice H&amp;M</b> <span class="badge b-err">wajib</span> – PDF asli dari sistem (ada teksnya, bukan scan). Satu file per invoice.
+                <div class="muted">Nama file bebas, dikenali dari isi.</div></li>
+            <li><b>Purchase Order H&amp;M</b> – untuk cek qty, harga, dan TOD Week per kode negara.
+                <div class="muted">Nama file bebas, dikenali dari isi.</div></li>
+            <li><b>BOM / Supplier Quote BOM</b> – untuk GSM shell (kolom AC) dan supplier kain.
+                <div class="muted">Nama file bebas, dikenali dari isi.</div></li>
+            <li><b>Scan DO (Surat Jalan)</b> – No DO dan kode negara dibaca dari <b>nama file</b>, tanggal &amp; gudang dari scan (OCR).
+                <div class="muted">Format nama wajib: <code>&lt;No DO&gt; - LYG - EXP - &lt;bulan romawi&gt; - &lt;tahun 4 digit&gt; - &lt;kode negara, pisah koma&gt;.pdf</code></div>
+                <div class="muted">Contoh: <code>000721 - LYG - EXP - VIII - 2026 - LD, OT, OU.pdf</code> → DO 000721/LYG-EXP/VIII/2026 untuk invoice kode LD, OT, OU.</div>
+                <div class="muted">Kalau 2 DO punya kode sama, stabilo kuning baris invoice order ini di DO agar DO terpilih otomatis.</div></li>
+            <li><b>Lampiran lain</b> (letter of statement, marker, dll.) – hanya dicatat di sheet Dokumen.
+                <div class="muted">Nama file bebas.</div></li>
+        </ul>
+        <div id="progress" class="muted"></div>
+    </section>
+
+    <section class="card" id="secFiles" hidden>
+        <div class="card-head">
+            <h2><span class="step">2</span> Dokumen terbaca</h2>
+            <button id="btnReset" class="btn ghost" type="button">Hapus semua</button>
+        </div>
+        <p class="muted">Jenis dideteksi otomatis. Kalau salah, ganti di kolom Jenis.</p>
+        <div class="table-wrap"><table id="tblFiles"></table></div>
+    </section>
+
+    <section class="card" id="secInv" hidden>
+        <h2><span class="step">3</span> Invoice &amp; DO</h2>
+        <p class="muted">File DO dipilih dari kode negara di nama file; kalau ada 2 DO dengan kode sama, dipilih dari baris yang di-stabilo kuning di scan DO (nomor invoice / warehouse).
+            No DO dari nama file; tanggal DO dibaca dari scan DO dengan OCR (tanda <b>OCR</b>). Semua bisa diedit.
+            Cek tanggal yang bertanda <b>OCR – cek scan</b> atau yang masih kosong.
+            Mengubah tanggal di satu baris ikut mengubah baris lain dengan No DO yang sama (yang masih kosong / hasil OCR).</p>
+        <div class="settings">
+            <label>Production Date = Invoice Date − <input id="setProdDays" type="number" min="0" max="365" value="14"> hari</label>
+            <label>Program untuk material recycled
+                <select id="setRecycled"><option value="RCS">RCS</option><option value="GRS">GRS</option></select>
+            </label>
+        </div>
+        <div class="settings" title="Diisi sekali per order, masuk ke semua baris sheet Shipment TC (kolom sesuai file Summary Details)">
+            <label>Consequence Date (W) <input id="setConsequence" type="date"></label>
+            <label title="Kolom X: kg kain per pcs, termasuk sisa potong">Konsumsi Kain / pcs (kg) <input id="setColX" type="text" size="7" placeholder="0.12"></label>
+            <label title="Kolom Y: 0.885 atau 88.5 = 88.5%. Waste % (Z), Kain Net (AA) dan Kain Gross (AB) dihitung otomatis">Efficiency <input id="setColY" type="text" size="7" placeholder="0.885"></label>
+            <label title="Kolom AD: nomor TC kain dari supplier">Input TC No (kain) <input id="setColAD" type="text" size="10" placeholder="5343805"></label>
+            <span class="muted">Diisi sekali per order → kolom W, X, Y, AD sheet Shipment TC. Waste %, Kain Net, Kain Gross dihitung otomatis.</span>
+        </div>
+        <div class="table-wrap"><table id="tblInv"></table></div>
+        <div id="invTotals" class="totals"></div>
+    </section>
+
+    <section class="card" id="secIssues" hidden>
+        <h2><span class="step">4</span> Temuan</h2>
+        <div id="issues"></div>
+    </section>
+
+    <section class="card" id="secGen" hidden>
+        <h2><span class="step">5</span> Generate Excel</h2>
+        <p class="muted">Sheet: Ringkasan, Shipment TC, Berat Serat (estimasi), PO vs Invoice, BOM, Temuan, Dokumen.</p>
+        <button id="btnGenerate" class="btn primary" type="button">Download Excel</button>
+        <span id="genMsg" class="muted"></span>
+    </section>
+</main>
+
+<script src="lib/pdfjs/pdf.min.js"></script>
+<script src="lib/pdfjs/pdf.worker.min.js"></script>
+<script src="lib/exceljs/exceljs.min.js"></script>
+<script src="js/parsers.js"></script>
+<script src="js/ocr.js"></script>
+<script src="js/validate.js"></script>
+<script src="js/excel.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

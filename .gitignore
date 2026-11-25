@@ -1,0 +1,13 @@
+# order documents and outputs never go into git (customer data)
+*.pdf
+*.xlsx
+*.xls
+*.zip
+# credentials
+account*.txt
+*.env
+# OS / editor
+Thumbs.db
+.DS_Store
+desktop.ini
+~$*
