@@ -1,0 +1,2 @@
+# third-party bundles: keep bytes exactly as shipped (no CRLF conversion)
+lib/** binary
