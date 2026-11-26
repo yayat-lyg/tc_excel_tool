@@ -1,7 +1,7 @@
 # TC Excel Tool
 
 Halaman HTML offline untuk menyiapkan data pengajuan TC Control Union dari dokumen shipment buyer.
-Sumber data: **PDF (+ OCR scan DO) dan input manual** (tanpa Sage, tanpa server). File tidak dikirim ke mana pun.
+Sumber data: **PDF (+ OCR scan DO) dan input manual** (tanpa server). File tidak dikirim ke mana pun.
 
 ## Cara pakai
 1. Buka `index.html` (double-click, Chrome/Edge).
