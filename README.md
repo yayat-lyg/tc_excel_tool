@@ -1,15 +1,15 @@
 # TC Excel Tool
 
-Halaman HTML offline untuk menyiapkan data pengajuan TC Control Union dari dokumen shipment H&M.
+Halaman HTML offline untuk menyiapkan data pengajuan TC Control Union dari dokumen shipment buyer.
 Sumber data: **PDF (+ OCR scan DO) dan input manual** (tanpa Sage, tanpa server). File tidak dikirim ke mana pun.
 
 ## Cara pakai
 1. Buka `index.html` (double-click, Chrome/Edge).
 2. Upload semua PDF satu order (extract ZIP dulu):
-   - Invoice H&M (wajib, PDF yang ada teksnya)
-   - Purchase Order H&M (untuk cek qty & harga per negara)
+   - Invoice buyer (wajib, PDF yang ada teksnya)
+   - Purchase Order buyer (untuk cek qty & harga per negara)
    - BOM / Supplier Quote BOM (opsional: GSM & supplier kain)
-   - Scan DO dengan nama file `000721 - LYG - EXP - VIII - 2026 - LD, OT, OU.pdf` (No DO + kode negara dari nama file, **tanggal DO dibaca OCR** dari header scan)
+   - Scan DO dengan nama file `000721 - XXX - EXP - VIII - 2026 - LD, OT, OU.pdf` (No DO + kode negara dari nama file, **tanggal DO dibaca OCR** dari header scan)
    - Lampiran lain (letter of statement, marker) hanya dicatat
 3. Tunggu OCR tanggal DO selesai (~5 detik per DO, lihat teks progres). Cek kolom Jenis, lalu di tabel invoice: File DO dipilih otomatis (kode negara di nama file; kalau ada 2 DO dengan kode sama, dari baris stabilo kuning di scan). Pilih manual kalau masih kosong, cek **Tgl DO** yang bertanda "OCR – cek scan" atau kosong.
 4. Isi sekali per order: Consequence Date (kolom W) dan nilai kolom X, Y, AD (kosongkan kalau tidak dipakai). Kolom Gudang (R) bisa diganti per invoice.
@@ -20,7 +20,7 @@ Ringkasan · Shipment TC (1 baris per invoice; kolom A–AD sama dengan sheet "S
 Teks biru = dari PDF / input manual; hitam = formula; kuning = wajib diisi / boleh diubah.
 
 ## Batasan
-- Parser mengikuti template invoice/PO/BOM H&M saat ini (dites dengan order 711225-7668, 14 invoice). Template lain perlu parser baru.
+- Parser mengikuti template invoice/PO/BOM buyer saat ini (dites dengan 1 order, 14 invoice). Template lain perlu parser baru.
 - Pemilihan DO dari scan hanya membaca baris yang di-stabilo kuning (nomor invoice, boleh salah 1 karakter, atau kode warehouse persis). DO tanpa stabilo = pilih manual kalau ada 2 DO dengan kode sama.
 - OCR tanggal hanya membaca baris DATE dan DELIVERY NO di header DO. Tahun dikoreksi dengan nama hari + tahun No DO. Kalau tidak terbaca, isi manual. Tanggal OCR diberi catatan di sel Excel.
 - OCR jalan di Web Worker (dibuat dari blob agar tetap jalan dari file://), halaman tetap bisa dipakai selama OCR. Kalau browser menolak worker, otomatis pindah ke halaman utama (halaman diam sebentar per DO).
