@@ -12,7 +12,13 @@ Sumber data: **PDF (+ OCR scan DO) dan input manual** (tanpa server). File tidak
    - Scan DO dengan nama file `000721 - XXX - EXP - VIII - 2026 - LD, OT, OU.pdf` (No DO + kode negara dari nama file, **tanggal DO dibaca OCR** dari header scan)
    - Lampiran lain (letter of statement, marker) hanya dicatat
 3. Tunggu OCR tanggal DO selesai (~5 detik per DO, lihat teks progres). Cek kolom Jenis, lalu di tabel invoice: File DO dipilih otomatis (kode negara di nama file; kalau ada 2 DO dengan kode sama, dari baris stabilo kuning di scan). Pilih manual kalau masih kosong, cek **Tgl DO** yang bertanda "OCR – cek scan" atau kosong.
-4. Isi sekali per order: Consequence Date (kolom W) dan nilai kolom X, Y, AD (kosongkan kalau tidak dipakai). Kolom Gudang (R) bisa diganti per invoice.
+4. Isi sekali per order (kosongkan kalau tidak dipakai):
+   - Consequence Date (kolom W)
+   - Konsumsi Kain / pcs (kg) (kolom X): kg kain per pcs, termasuk sisa potong
+   - Efficiency (kolom Y): `0.885` atau `88.5` = 88.5%. Waste % (Z), Kain Net (AA) dan Kain Gross (AB) dihitung otomatis
+   - Input TC No (kain) (kolom AD): nomor TC kain dari supplier
+
+   Address warehouse (kolom R) bisa diganti per invoice.
 5. Lihat Temuan, lalu klik **Download Excel**.
 
 ## Isi Excel
